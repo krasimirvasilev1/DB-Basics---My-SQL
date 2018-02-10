@@ -1,0 +1,139 @@
+1.
+SELECT department_id, COUNT(department_id) AS `Number of employees` FROM employees
+GROUP BY department_id
+ORDER BY department_id, `Number of employees`;
+
+2.
+SELECT department_id , ROUND(AVG(salary),2) AS 'Average Salary' FROM employees
+GROUP BY department_id
+
+3.
+SELECT department_id , ROUND(MIN(salary),2) AS `min salary` FROM employees
+GROUP BY department_id
+HAVING `min salary` > 800
+
+4.
+SELECT COUNT(price) FROM products
+WHERE price > 8
+
+5.
+SELECT category_id, ROUND(AVG(price),2) AS 'Average Price',ROUND(MIN(price),2) AS 'Cheapest Product', ROUND(MAX(price),2) AS 'Most Expensive Product' FROM products
+GROUP BY category_id
+
+6.
+SELECT COUNT(w.id) as 'count' FROM wizzard_deposits AS w
+
+7.
+SELECT MAX(w.magic_wand_size) as 'longest_magic_wand' FROM wizzard_deposits AS w
+
+8.
+SELECT w.deposit_group,MAX(w.magic_wand_size) AS `longest_magic_wand` FROM wizzard_deposits AS w
+GROUP BY w.deposit_group
+ORDER BY `longest_magic_wand`, w.deposit_group
+
+9.
+SELECT w.deposit_group FROM wizzard_deposits AS w
+LIMIT 1
+
+10.
+SELECT w.deposit_group, SUM(w.deposit_amount) AS `total_sum` FROM wizzard_deposits AS w
+GROUP BY w.deposit_group 
+ORDER BY `total_sum`
+
+11.
+SELECT w.deposit_group, SUM(w.deposit_amount) AS `total_sum` FROM wizzard_deposits AS w
+GROUP BY w.deposit_group,w.magic_wand_creator
+HAVING w.magic_wand_creator = 'Ollivander family'
+ORDER BY w.deposit_group
+
+12.
+SELECT w.deposit_group, SUM(w.deposit_amount) AS `total_sum` FROM wizzard_deposits AS w
+GROUP BY w.deposit_group,w.magic_wand_creator
+HAVING w.magic_wand_creator = 'Ollivander family' AND `total_sum` < 150000
+ORDER BY `total_sum` DESC
+
+13.
+SELECT w.deposit_group, w.magic_wand_creator, MIN(w.deposit_charge) AS 'min_deposit_charge' FROM wizzard_deposits as w
+GROUP BY w.deposit_group,w.magic_wand_creator
+ORDER BY w.magic_wand_creator, w.deposit_group
+
+14.
+SELECT
+CASE WHEN w.age BETWEEN 0 AND 10 THEN '[0-10]'
+WHEN w.age BETWEEN 11 and 20 THEN '[11-20]'
+WHEN w.age BETWEEN 21 and 30 THEN '[21-30]'
+WHEN w.age BETWEEN 31 and 40 THEN '[31-40]'
+WHEN w.age BETWEEN 41 and 50 THEN '[41-50]'
+WHEN w.age BETWEEN 51 and 60 THEN '[51-60]'
+WHEN w.age > 61 THEN '[61+]' END AS `age_group`,COUNT(w.id) AS `wizard_count` FROM wizzard_deposits AS w
+GROUP BY `age_group`
+
+15.
+SELECT DISTINCT LEFT(w.first_name,1) AS `letter` FROM wizzard_deposits AS w
+WHERE w.deposit_group = 'Troll Chest'
+ORDER BY `letter`
+
+16.
+SELECT w.deposit_group,w.is_deposit_expired,AVG(w.deposit_interest) AS `average interest` FROM wizzard_deposits AS w
+WHERE w.deposit_start_date > '1985-01-01'
+GROUP BY w.deposit_group,w.is_deposit_expired
+ORDER BY w.deposit_group DESC , w.is_deposit_expired
+
+17.
+SELECT SUM(asd.difference) AS sum_difference
+FROM (SELECT wd1.first_name AS host_wizard,
+wd1.deposit_amount AS host_wizard_deposit,
+wd2.deposit_amount AS guest_wizard_deposit,
+(wd1.deposit_amount - wd2.deposit_amount) AS difference
+FROM wizzard_deposits AS wd1, wizzard_deposits AS wd2
+WHERE wd2.id - wd1.id = 1) AS asd;
+
+18.
+SELECT department_id,MIN(salary) AS 'minimum_salary' FROM employees
+WHERE DATE(hire_date) > DATE('2000-01-01')
+GROUP BY department_id
+HAVING department_id IN (2,5,7)
+ORDER BY department_id
+
+19.
+CREATE TABLE new_table AS
+(SELECT * FROM employees
+WHERE salary > 30000);
+
+DELETE FROM new_table
+WHERE manager_id = 42;
+
+UPDATE new_table
+SET salary = salary + 5000
+WHERE department_id = 1;
+
+SELECT department_id, AVG(salary) FROM new_table
+GROUP BY department_id
+ORDER BY department_id
+
+20.
+SELECT department_id,MAX(salary) AS `max_salary` FROM employees
+GROUP BY department_id
+HAVING `max_salary` NOT BETWEEN 30000 AND 70000
+ORDER BY department_id
+
+21.
+SELECT COUNT(salary) FROM employees
+GROUP BY manager_id
+HAVING manager_id IS NULL
+
+22.
+SELECT t1.department_id
+,(
+SELECT DISTINCT t2.salary FROM employees AS t2
+WHERE t2.department_id = t1.department_id
+ORDER BY t2.salary DESC
+LIMIT 2,1) AS `third_value`
+FROM employees AS t1
+GROUP BY t1.department_id
+HAVING `third_value` IS NOT NULL
+
+23.
+SELECT e.department_id, SUM(e.salary) FROM employees AS e
+GROUP BY e.department_id
+ORDER BY e.department_id
