@@ -1,0 +1,257 @@
+1.
+CREATE TABLE mountains (
+mountain_id INT PRIMARY KEY AUTO_INCREMENT,
+mountain_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE peaks (
+peak_id INT PRIMARY KEY AUTO_INCREMENT,
+peak_name VARCHAR(50) NOT NULL,
+mountain_id INT NOT NULL,
+CONSTRAINT fk_mountains_peaks
+FOREIGN KEY (mountain_id)
+REFERENCES mountains(mountain_id)
+);
+
+2.
+CREATE TABLE authors (
+author_id INT PRIMARY KEY AUTO_INCREMENT,
+author_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE books (
+book_id INT PRIMARY KEY AUTO_INCREMENT,
+book_name VARCHAR(50) NOT NULL,
+author_id INT,
+CONSTRAINT fk_authors_books
+FOREIGN KEY (author_id)
+REFERENCES authors(author_id) ON DELETE CASCADE
+);
+
+3.
+SELECT c.id, v.vehicle_type,CONCAT(c.first_name,' ',c.last_name) AS 'driver_name' FROM campers AS c
+JOIN vehicles AS v
+ON c.id = v.driver_id
+
+4.
+SELECT r.starting_point,r.end_point, r.leader_id, CONCAT(c.first_name,' ',c.last_name) AS 'leader_name' FROM routes AS r
+JOIN campers AS c 
+ON  r.leader_id = c.id 
+
+5.
+CREATE TABLE persons(
+person_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+first_name VARCHAR(50) NOT NULL,
+salary DECIMAL(10,2),
+passport_id INT NOT NULL
+);
+
+CREATE TABLE passports(
+passport_id INT NOT NULL PRIMARY KEY,
+passport_number VARCHAR(50) NOT NULL UNIQUE 
+);
+
+INSERT INTO persons (first_name,salary,passport_id)
+VALUES('Roberto',43300.00,102);
+INSERT INTO persons (first_name,salary,passport_id)
+VALUES('Tom',56100.00,103);
+INSERT INTO persons (first_name,salary,passport_id)
+VALUES('Yana',60200.00,101);
+
+INSERT INTO passports
+VALUES(101,'N34FG21B');
+INSERT INTO passports
+VALUES(102,'K65LO4R7');
+INSERT INTO passports
+VALUES(103,'ZE657QP2');
+
+ALTER TABLE persons
+ADD CONSTRAINT fk_passports_persons
+FOREIGN KEY (passport_id)
+REFERENCES passports(passport_id)
+
+6.
+CREATE TABLE manufacturers(
+manufacturer_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(50) UNIQUE,
+established_on DATE
+);
+
+CREATE TABLE models(
+model_id INT PRIMARY KEY NOT NULL,
+name VARCHAR(50) UNIQUE,
+manufacturer_id INT NOT NULL,
+CONSTRAINT fk_manufacturers_models
+FOREIGN KEY (manufacturer_id)
+REFERENCES manufacturers(manufacturer_id)
+);
+
+INSERT INTO manufacturers(name ,established_on)
+VALUES('BMW','1916-03-01');
+INSERT INTO manufacturers(name ,established_on)
+VALUES('Tesla','2003-01-01');
+INSERT INTO manufacturers(name ,established_on)
+VALUES('Lada','1966-05-01');	
+
+INSERT INTO models
+VALUES(101,'X1',1),(102,'i6',1),(103,'Model S',2),(104,'Model X',2),(105,'Model 3',2),(106,'Nova',3);
+
+7.
+CREATE TABLE students(
+student_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE exams(
+exam_id INT NOT NULL PRIMARY KEY,
+name VARCHAR(50) NOT NULL
+);
+
+INSERT INTO students (name)
+VALUES ('Mila'),('Toni'),('Ron');
+
+INSERT INTO exams
+VALUES(101,'Spring MVC'),(102,'Neo4j'),(103,'Oracle 11g');
+
+CREATE TABLE students_exams(
+student_id INT NOT NULL,
+exam_id INT NOT NULL,
+CONSTRAINT pk_student_exams
+PRIMARY KEY (student_id,exam_id),
+CONSTRAINT fk_students_id
+FOREIGN KEY (student_id)
+REFERENCES students(student_id),
+CONSTRAINT fk_exams_id
+FOREIGN KEY (exam_id)
+REFERENCES exams(exam_id)
+);
+
+INSERT INTO students_exams
+VALUES(1,101),(1,102),(2,101),(3,103),(2,102),(2,103);
+
+8.
+CREATE TABLE teachers(
+teacher_id INT NOT NULL PRIMARY KEY,
+name VARCHAR(50) NOT NULL,
+manager_id INT,
+CONSTRAINT fk_teacher_manager
+FOREIGN KEY(manager_id)
+REFERENCES teachers(teacher_id)
+);
+
+INSERT INTO teachers 
+VALUES(101,'John',NULL),(102,'Maya',NULL),(103,'Silvia',NULL),(104,'Ted',NULL),(105,'Mark',NULL),(106,'Greta',NULL);
+
+UPDATE teachers
+SET manager_id = 106
+WHERE teacher_id = 102;
+
+UPDATE teachers
+SET manager_id = 106
+WHERE teacher_id = 103;
+
+UPDATE teachers
+SET manager_id = 105
+WHERE teacher_id = 104;
+
+UPDATE teachers
+SET manager_id = 101
+WHERE teacher_id = 105;
+
+UPDATE teachers
+SET manager_id = 101
+WHERE teacher_id = 106;
+
+9.
+CREATE TABLE item_types(
+item_type_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+`name` VARCHAR(50)
+);
+
+CREATE TABLE items(
+item_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+`name` VARCHAR(50),
+item_type_id INT(11),
+CONSTRAINT fk_items_itemTypes
+FOREIGN KEY (item_type_id)
+REFERENCES item_types(item_type_id)
+);
+
+CREATE TABLE cities(
+city_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+`name` VARCHAR(50)
+);
+
+CREATE TABLE customers(
+customer_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+`name` VARCHAR(50),
+birthday DATE,
+city_id INT(11),
+CONSTRAINT fk_cities_customers
+FOREIGN KEY (city_id)
+REFERENCES cities(city_id)
+);
+
+CREATE TABLE orders(
+order_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+customer_id INT(11),
+CONSTRAINT fk_customers_orders
+FOREIGN KEY (customer_id)
+REFERENCES customers(customer_id)
+);
+
+CREATE TABLE order_items(
+order_id INT(11),
+item_id INT(11),
+CONSTRAINT fk_orders_orderItems
+FOREIGN KEY (order_id)
+REFERENCES orders(order_id),
+CONSTRAINT fk_items_orderItems
+FOREIGN KEY (item_id)
+REFERENCES items(item_id)
+);
+
+10.
+CREATE TABLE subjects(
+subject_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+subject_name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE majors(
+major_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+name VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE students(
+student_id INT (11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+student_number VARCHAR(12),
+student_name VARCHAR(50),
+major_id INT NOT NULL,
+CONSTRAINT fk_majors_students
+FOREIGN KEY (major_id)
+REFERENCES majors(major_id)
+);
+
+CREATE TABLE payments(
+payment_id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+payment_date DATE,
+payment_amount DECIMAL(8,2),
+student_id INT(11) NOT NULL,
+CONSTRAINT fk_students_payments
+FOREIGN KEY (student_id)
+REFERENCES students(student_id)
+);
+
+CREATE TABLE agenda(
+student_id INT(11) NOT NULL,
+subject_id INT(11) NOT NULL,
+CONSTRAINT fk_students_agenda
+FOREIGN KEY (student_id)
+REFERENCES students(student_id),
+CONSTRAINT fk_subjects_agenda
+FOREIGN KEY (subject_id)
+REFERENCES subjects(subject_id)
+);
+
+11.
+
